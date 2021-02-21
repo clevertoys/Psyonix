@@ -45,6 +45,9 @@ public:
     bool DidComputerWin();
 
     bool IsGameADraw();
+
+
+
     // Marking this method as static as it does not depend on any members of the instance. Might change this for simplicity of use,
     // But wanted to at least make this observation
 static void PrintHelp();
@@ -62,6 +65,17 @@ private:
     void ResetBoard();
 
     void PlacePlayerPiece(std::uint8_t location);
+
+    std::uint8_t WhichRow(std::uint8_t location);
+    std::uint8_t WhichColumn(std::uint8_t location);
+
+    bool CanRowBeWon(std::uint8_t row);
+
+    bool CanColumnBeWon(std::uint8_t row);
+    bool CanDiagonalBeWon();
+    bool HasDiagonalBeWon();
+    bool HasRowBeWon(std::uint8_t row);
+    bool HasColumnBeWon(std::uint8_t row);
 
 
 

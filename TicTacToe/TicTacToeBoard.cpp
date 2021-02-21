@@ -282,16 +282,130 @@
 
     bool TicTacToeBoard::DidPlayerWin()
     {
+        if (iNumMovesMadeSoFar == 0) return false;
+        // Based on the last move the player made, check all the possible wins from that location
+        std::uint8_t lastPlayerLocation = iMoves[iNumMovesMadeSoFar]' // NOTE: The computer has not yet made its move!'
         return false;
     }
 
     bool TicTacToeBoard::DidComputerWin()
     {
+        if (iNumMovesMadeSoFar == 0) return false;
+
+        // Based on the last move the computer made, check all the possible wins from that location
+        uint8_t lastComputerLocatinon = iMoves[iNumMovesMadeSoFar];
+
         return false;
     }
 
     bool TicTacToeBoard::IsGameADraw()
     {
+        if (iNumMovesMadeSoFar == 0) return false;
+
+        // Check if any possible win (full row, full column, full diagonal) have any possible wins by either player
+        for (int x = 0; x < iBoardWidth; x++)
+        {
+            if (CanColumnBeWon(x)) return false;
+        }
+        for (int y = 0; y < iBoardHeight; y++)
+        {
+            if (CanRowBeWon(y)) return false;
+        }
+        return true;
+    }
+    std::uint8_t TicTacToeBoard::WhichRow(std::uint8_t location)
+    {
+        return (std::uint8_t)(location / iBoardWidth);
+    }
+    std::uint8_t TicTacToeBoard::WhichColumn(std::uint8_t location)
+    {
+        return (std::uint8_t)(location / iBoardHeight);
+    }
+    bool TicTacToeBoard::CanDiagonalBeWon()
+    {
+        int numXsFound = 0;
+        int numOsFound = 0;
+        for (int x = 0; x < iBoardWidth; x++)
+        {
+            for (int y = 0; y < iBoardHeight; y++)
+            {
+                uint8_t location = (y * iBoardWidth) + (x * iBoardHeight);
+                if (cBoard[location] == 'X') numXsFound++;
+                else if (cBoard[location] == 'O') numOsFound++;
+            }
+        }
+        if (numXsFound + numOsFound == 0) return true;
+        if (numXsFound != 0 && numOsFound == 0) return true;
+        if (numOsFound != 0 && numXsFound == 0) return true;
+        return false;
+    }
+
+    bool TicTacToeBoard::HasDiagonalBeWon()
+    {
+        return false;
+    }
+
+    bool TicTacToeBoard::HasRowBeWon(std::uint8_t row)
+    {
+        int numXsFound = 0;
+        int numOsFound = 0;
+        for (int x = 0; x < iBoardWidth; x++)
+        {
+            uint8_t location = (row * iBoardWidth) + x;
+            if (cBoard[location] == 'X') numXsFound++;
+            else if (cBoard[location] == 'O') numOsFound++;
+        }
+        if (numXsFound == iBoardWidth) return true;
+        if (numOsFound == iBoardWidth) return true;
+
+        return false;
+    }
+
+    bool TicTacToeBoard::HasColumnBeWon(std::uint8_t col)
+    {
+        int numXsFound = 0;
+        int numOsFound = 0;
+        for (int y = 0; y < iBoardHeight; y++)
+        {
+            uint8_t location = (y * iBoardWidth) + col;
+            if (cBoard[location] == 'X') numXsFound++;
+            else if (cBoard[location] == 'O') numOsFound++;
+        }
+        if (numXsFound == iBoardHeight) return true;
+        if (numOsFound == iBoardHeight) return true;
+        return false;
+    }
+
+
+        bool TicTacToeBoard::CanRowBeWon(std::uint8_t row)
+        {
+            int numXsFound = 0;
+            int numOsFound = 0;
+            for (int x = 0; x < iBoardWidth; x++)
+            {
+                uint8_t location = (row * iBoardWidth) + x;
+                if (cBoard[location] == 'X') numXsFound++;
+                else if (cBoard[location] == 'O') numOsFound++;
+            }
+            if (numXsFound + numOsFound == 0) return true;
+            if (numXsFound != 0 && numOsFound == 0) return true;
+            if (numOsFound != 0 && numXsFound == 0) return true;
+            return false;
+        }
+
+    bool TicTacToeBoard::CanColumnBeWon(std::uint8_t col)
+    {
+        int numXsFound = 0;
+        int numOsFound = 0;
+        for (int y = 0; y < iBoardHeight; y++)
+        {
+            uint8_t location = (y * iBoardWidth) + col;
+            if (cBoard[location] == 'X') numXsFound++;
+            else if (cBoard[location] == 'O') numOsFound++;
+        }
+        if (numXsFound + numOsFound == 0) return true;
+        if (numXsFound != 0 && numOsFound == 0) return true;
+        if (numOsFound != 0 && numXsFound == 0) return true;
         return false;
     }
 
