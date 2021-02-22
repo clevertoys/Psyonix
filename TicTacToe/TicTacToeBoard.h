@@ -65,7 +65,7 @@ private:
     TicTacToeBoard(const TicTacToeBoard&);
     TicTacToeBoard& operator=(const TicTacToeBoard& rhs);
 
-    void ResizeBoard(int width, int height);
+    void ResizeBoard(int size);
 
 
     void PlacePlayerPiece(int location);

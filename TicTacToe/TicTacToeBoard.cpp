@@ -37,11 +37,13 @@ TicTacToeBoard::~TicTacToeBoard()
 	delete[] iMoves;
 }
 
-void TicTacToeBoard::ResizeBoard(int width, int height)
+void TicTacToeBoard::ResizeBoard(int size)
 {
+	assert(size > 2);
+
 	delete[] cBoard;
-	iBoardWidth = width;
-	iBoardHeight = height;
+	iBoardWidth = size;
+	iBoardHeight = size;
 	CheckAndAdjustSizes();
 	AllocateBoardMemory();
 }
@@ -224,12 +226,11 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 	}
 	else if (input == "resize")
 	{
-	int newWidth = 3;
-	int newHeight = 3;
+	int newSize = 3;
 	std::string inputString;
 
 
-	std::cout << "Please enter a new width (min of 3):\n";
+	std::cout << "Please enter a new size (min of 3):\n";
 	std::cin >> inputString;
 	while (!IsInputANumber(inputString))
 	{
@@ -237,22 +238,13 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 		std::cout << "Please enter a new width (min of 3):\n";
 		std::cin >> inputString;
 	}
-	newWidth = GetInputNumber(inputString);
+	newSize = GetInputNumber(inputString);
 
-	std::cout << "Please enter a new height (min of 3):\n";
-	std::cin >> inputString;
-	while (!IsInputANumber(inputString))
-	{
-		std::cout << "Please enter a new width (min of 3):\n";
-		std::cin >> inputString;
-	}
-	newHeight = GetInputNumber(inputString);
-
-	std::cout << "New board size is now ";
-	std::cout << newWidth + "X" + newHeight;
+	std::cout << "New board size is now " << newSize << "X" << newSize << "\n";
 	// TODO prompt for and validate new sizes
 
-	ResizeBoard(newWidth, newHeight);
+	ResizeBoard(newSize);
+	PrintBoard();
 	return true;
 
 	}
