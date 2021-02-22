@@ -105,7 +105,7 @@ void TicTacToeBoard::AllocateBoardMemory()
 
 
 
-bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation)
+bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation) const
 {
 	if (moveLocation >= iBoardHeight * iBoardHeight) return false;
 	if (moveLocation < 0) return false;
@@ -114,7 +114,7 @@ bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation)
 	return false;
 }
 
-void TicTacToeBoard::PrintBoard() {
+void TicTacToeBoard::PrintBoard() const {
 	//std::cout << "\n\nHere is the current state of the board:\n\n";
 	PrintRowOfDashes();
 
@@ -137,7 +137,7 @@ void TicTacToeBoard::PrintBoard() {
 
 }
 
-void TicTacToeBoard::PrintRowOfDashes()
+void TicTacToeBoard::PrintRowOfDashes() const
 {
 	for (int x = 0; x < (iBoardWidth * 4) + 1; x++) std::cout << "-";
 	std::cout << "\n";
@@ -153,7 +153,7 @@ std::string TicTacToeBoard::AskUserForInput()
 	return inputResult;
 }
 
-bool TicTacToeBoard::IsInputANumber(std::string input)
+bool TicTacToeBoard::IsInputANumber(std::string input) const
 {
 	char* end;
 	int number = (int)strtol(input.c_str(), &end, 10);
@@ -164,7 +164,7 @@ bool TicTacToeBoard::IsInputANumber(std::string input)
 	return true;
 }
 
-int TicTacToeBoard::GetInputNumber(std::string input)
+int TicTacToeBoard::GetInputNumber(std::string input) const
 {
 	char* end;
 	return (int)strtol(input.c_str(), &end, 10);
@@ -280,7 +280,7 @@ void TicTacToeBoard::Quit()
 	bTimeToQuit = true;
 }
 
-bool TicTacToeBoard::IsTimeToQuit()
+bool TicTacToeBoard::IsTimeToQuit() const
 {
 	return bTimeToQuit;
 }
@@ -298,7 +298,7 @@ void  TicTacToeBoard::Undo()
 	PrintBoard();
 }
 
-bool TicTacToeBoard::DidSomeoneWin(const char piece)
+bool TicTacToeBoard::DidSomeoneWin(const char piece) const
 {
 	if (iNumMovesMadeSoFar < 6) return false;
 
@@ -317,7 +317,7 @@ bool TicTacToeBoard::DidSomeoneWin(const char piece)
 	return false;
 }
 
-bool TicTacToeBoard::IsGameADraw()
+bool TicTacToeBoard::IsGameADraw() const
 {
 	if (iNumMovesMadeSoFar != iBoardHeight * iBoardWidth) return false;
 
@@ -325,16 +325,16 @@ bool TicTacToeBoard::IsGameADraw()
 	if (DidSomeoneWin(cPlayerPiece)) return false;
 	return true;
 }
-int TicTacToeBoard::WhichRow(int location)
+int TicTacToeBoard::WhichRow(int location) const
 {
 	return (int)(location / iBoardHeight);
 }
-int TicTacToeBoard::WhichColumn(int location)
+int TicTacToeBoard::WhichColumn(int location) const
 {
 	return (int)(location % iBoardWidth);
 }
 
-int TicTacToeBoard::CalculateBestComputerMove()
+int TicTacToeBoard::CalculateBestComputerMove() const
 {
 	// There are some basic strategies to employ...
 	// First, if the user is about to win, a blocking move should be made
@@ -393,7 +393,7 @@ int TicTacToeBoard::CalculateBestComputerMove()
 	return location;
 }
 
-bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece)
+bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece) const
 {
 	int numPiecesFound = 0;
 
@@ -417,7 +417,7 @@ bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece)
 	return false;
 }
 
-bool TicTacToeBoard::HasRowBeenWon(int row, const char piece)
+bool TicTacToeBoard::HasRowBeenWon(int row, const char piece) const
 {
 	int numPiecesFound = 0;
 	for (int x = 0; x < iBoardWidth; x++)
@@ -430,7 +430,7 @@ bool TicTacToeBoard::HasRowBeenWon(int row, const char piece)
 	return false;
 }
 
-bool TicTacToeBoard::HasColumnBeenWon(int col, const char piece)
+bool TicTacToeBoard::HasColumnBeenWon(int col, const char piece) const
 {
 	int numPiecesFound = 0;
 	for (int y = 0; y < iBoardHeight; y++)
@@ -442,7 +442,7 @@ bool TicTacToeBoard::HasColumnBeenWon(int col, const char piece)
 	return false;
 }
 
-int TicTacToeBoard::CheckSomeoneAboutToWinRow(int row, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinRow(int row, const char piece) const
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
@@ -462,7 +462,7 @@ int TicTacToeBoard::CheckSomeoneAboutToWinRow(int row, const char piece)
 	return -1;
 }
 
-int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece) const
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
@@ -483,7 +483,7 @@ int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece)
 }
 
 // This is a bit screwy if the board is non square... I will do some research on it...
-int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int diag, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int diag, const char piece) const
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;

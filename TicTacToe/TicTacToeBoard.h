@@ -31,29 +31,30 @@ public:
 
 
 
-    void PrintBoard();
+    void PrintBoard() const;
 
     std::string AskUserForInput();
 
     // Returns true if input was valid/legal and succeeded, else false
-    bool ProcessInput(std::string input);
+    bool ProcessInput(const std::string input);
 
     void Quit();
 
-    bool IsTimeToQuit();
+    bool IsTimeToQuit() const;
 
     void Undo();
 
-    bool DidSomeoneWin(const char piece);
+    bool DidSomeoneWin(const char piece) const;
 
-    bool IsGameADraw();
+    bool IsGameADraw() const;
 
     void ResetBoard();
 
     bool AskToPlayAgain();
 
     // Marking this method as static as it does not depend on any members of the instance. Might change this for simplicity of use,
-    // But wanted to at least make this observation
+    // But wanted to at least make this observation. It just seemed to make sense to let an app print the help before creating an instance
+    // Otherwise it would be a const member
 static void PrintHelp();
 
     ~TicTacToeBoard();
@@ -70,20 +71,20 @@ private:
     void PlacePlayerPiece(int location);
     void PlaceComputerPiece(int location);
 
-    int WhichRow(int location);
-    int WhichColumn(int location);
+    int WhichRow(int location) const;
+    int WhichColumn(int location) const;
 
-    int CalculateBestComputerMove();
+    int CalculateBestComputerMove() const;
 
-    bool HasDiagonalBeenWon(int diag, const char piece);
-    bool HasRowBeenWon(int row, const char piece);
-    bool HasColumnBeenWon(int row, const char piece);
+    bool HasDiagonalBeenWon(int diag, const char piece) const;
+    bool HasRowBeenWon(int row, const char piece) const;
+    bool HasColumnBeenWon(int row, const char piece) const;
 
     // These functions return the empty square that remains in a row or column that a player
     // is about to win. If the player is not about to win, they return -1
-    int CheckSomeoneAboutToWinRow(int row, const char piece);
-    int CheckSomeoneAboutToWinCol(int col, const char piece);
-    int CheckSomeoneAboutToWinDiag(int diag, const char piece);
+    int CheckSomeoneAboutToWinRow(int row, const char piece) const;
+    int CheckSomeoneAboutToWinCol(int col, const char piece) const;
+    int CheckSomeoneAboutToWinDiag(int diag, const char piece) const;
 
 
 
@@ -92,13 +93,13 @@ private:
 
     void AllocateBoardMemory();
 
-    bool IsLegalPlayerMove(int moveLocation);
+    bool IsLegalPlayerMove(int moveLocation) const;
 
-    void PrintRowOfDashes();
+    void PrintRowOfDashes() const;
 
-    bool IsInputANumber(std::string input);
+    bool IsInputANumber(std::string input) const;
 
-    int GetInputNumber(std::string input);
+    int GetInputNumber(std::string input) const;
 
 
 
