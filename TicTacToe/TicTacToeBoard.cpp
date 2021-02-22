@@ -401,7 +401,7 @@ bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece) const
 	int location = 0;
 	if (diag == 1)
 	{
-		increment = -(iBoardWidth + 1);
+		increment = (iBoardWidth - 1);
 		location = iBoardWidth - 1;
 	}
 
