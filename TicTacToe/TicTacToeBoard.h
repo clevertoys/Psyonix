@@ -67,17 +67,26 @@ private:
 
 
     void PlacePlayerPiece(std::uint8_t location);
+    void PlaceComputerPiece(std::uint8_t location);
 
     std::uint8_t WhichRow(std::uint8_t location);
     std::uint8_t WhichColumn(std::uint8_t location);
 
-    bool CanRowBeWon(std::uint8_t row);
+    int CalculateBestComputerMove();
 
+    bool CanRowBeWon(std::uint8_t row);
     bool CanColumnBeWon(std::uint8_t row);
     bool CanDiagonalBeWon();
-    bool HasDiagonalBeWon();
-    bool HasRowBeWon(std::uint8_t row);
-    bool HasColumnBeWon(std::uint8_t row);
+
+    bool HasDiagonalBeenWon();
+    bool HasRowBeenWon(std::uint8_t row);
+    bool HasColumnBeenWon(std::uint8_t row);
+
+    // These functions return the empty square that remains in a row or column that a player
+    // is about to win. If the player is not about to win, they return -1
+    int CheckSomeoneAboutToWinRow(std::uint8_t row, const char piece);
+    int CheckSomeoneAboutToWinCol(std::uint8_t col, const char piece);
+    int CheckSomeoneAboutToWinDiag(std::uint8_t diag, const char piece);
 
 
 
@@ -86,13 +95,11 @@ private:
 
     void AllocateBoardMemory();
 
-    void PlaceComputerPiece();
-
     bool IsLegalPlayerMove(uint8_t moveLocation);
 
     void PrintRowOfDashes();
 
-    bool IsInoutANumber(std::string input);
+    bool IsInputANumber(std::string input);
 
     uint8_t GetInputNumber(std::string input);
 
@@ -112,6 +119,9 @@ private:
     std::uint8_t* iMoves;
 
     bool bTimeToQuit = false;
+
+    static const char cPlayerPiece = 'X';
+    static const char cComputerPiece = 'O';
 
 };
 
