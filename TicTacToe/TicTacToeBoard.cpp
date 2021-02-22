@@ -1,4 +1,5 @@
 #include "TicTacToeBoard.h"
+#include <cassert>
 
 // We will need a few things as part of the core architecture/functionality
 // 1) A data structure to represent the state of the board
@@ -19,6 +20,8 @@
 
 TicTacToeBoard::TicTacToeBoard(int width, int height)
 {
+	// No asserts needed here as the Check method below fixes things up if needed and warns the user
+
 	iBoardWidth = width;
 	iBoardHeight = height;
 
@@ -54,7 +57,8 @@ void TicTacToeBoard::ResetBoard()
 
 void TicTacToeBoard::PlacePlayerPiece(int location)
 {
-	// TODO extra validation here?
+	assert(location >= 0 && location < iBoardHeight* iBoardWidth);
+	assert(iNumMovesMadeSoFar < iBoardHeight* iBoardWidth);
 
 	cBoard[location] = cPlayerPiece;
 	iMoves[iNumMovesMadeSoFar++] = location;
@@ -68,6 +72,9 @@ void TicTacToeBoard::PlacePlayerPiece(int location)
 }
 void TicTacToeBoard::PlaceComputerPiece(int location)
 {
+	assert(location >= 0 && location < iBoardHeight* iBoardWidth);
+	assert(iNumMovesMadeSoFar < iBoardHeight* iBoardWidth);
+
 	cBoard[location] = cComputerPiece;
 	iMoves[iNumMovesMadeSoFar++] = location;
 }
@@ -98,9 +105,11 @@ void TicTacToeBoard::AllocateBoardMemory()
 
 
 
-bool TicTacToeBoard::IsLegalPlayerMove(uint8_t moveLocation)
+bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation)
 {
 	if (moveLocation >= iBoardHeight * iBoardHeight) return false;
+	if (moveLocation < 0) return false;
+
 	if (cBoard[moveLocation] == ' ') return true;
 	return false;
 }
@@ -147,7 +156,7 @@ std::string TicTacToeBoard::AskUserForInput()
 bool TicTacToeBoard::IsInputANumber(std::string input)
 {
 	char* end;
-	uint8_t number = (uint8_t)strtol(input.c_str(), &end, 10);
+	int number = (int)strtol(input.c_str(), &end, 10);
 	if (end == input.c_str())
 	{
 		return false;
@@ -155,10 +164,10 @@ bool TicTacToeBoard::IsInputANumber(std::string input)
 	return true;
 }
 
-uint8_t TicTacToeBoard::GetInputNumber(std::string input)
+int TicTacToeBoard::GetInputNumber(std::string input)
 {
 	char* end;
-	return (uint8_t)strtol(input.c_str(), &end, 10);
+	return (int)strtol(input.c_str(), &end, 10);
 }
 
 bool TicTacToeBoard::AskToPlayAgain()
@@ -200,7 +209,7 @@ bool TicTacToeBoard::ProcessInput(std::string input)
 	}
 	else if (IsInputANumber(input))
 	{
-	uint8_t location = GetInputNumber(input);
+	int location = GetInputNumber(input);
 	// Attempt to place the player piece
 	if (IsLegalPlayerMove(location))
 	{
@@ -215,8 +224,8 @@ bool TicTacToeBoard::ProcessInput(std::string input)
 	}
 	else if (input == "resize")
 	{
-	uint8_t newWidth = 3;
-	uint8_t newHeight = 3;
+	int newWidth = 3;
+	int newHeight = 3;
 	std::string inputString;
 
 
@@ -413,7 +422,7 @@ bool TicTacToeBoard::HasRowBeenWon(int row, const char piece)
 	int numPiecesFound = 0;
 	for (int x = 0; x < iBoardWidth; x++)
 	{
-		uint8_t location = (row * iBoardWidth) + x;
+		int location = (row * iBoardWidth) + x;
 		if (cBoard[location] == piece) numPiecesFound++;
 	}
 	if (numPiecesFound == iBoardWidth) return true;
@@ -426,7 +435,7 @@ bool TicTacToeBoard::HasColumnBeenWon(int col, const char piece)
 	int numPiecesFound = 0;
 	for (int y = 0; y < iBoardHeight; y++)
 	{
-		uint8_t location = (y * iBoardWidth) + col;
+		int location = (y * iBoardWidth) + col;
 		if (cBoard[location] == piece) numPiecesFound++;
 	}
 	if (numPiecesFound == iBoardHeight) return true;

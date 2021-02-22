@@ -92,13 +92,13 @@ private:
 
     void AllocateBoardMemory();
 
-    bool IsLegalPlayerMove(uint8_t moveLocation);
+    bool IsLegalPlayerMove(int moveLocation);
 
     void PrintRowOfDashes();
 
     bool IsInputANumber(std::string input);
 
-    uint8_t GetInputNumber(std::string input);
+    int GetInputNumber(std::string input);
 
 
 
