@@ -13,16 +13,56 @@ int main()
 
     TicTacToeBoard::PrintHelp();
 
-    while (!theGame->DidPlayerWin() && !theGame->DidComputerWin() && !theGame->IsGameADraw())
+    while (!theGame->IsTimeToQuit())
     {
         theGame->PrintBoard();
         std::string result = theGame->AskUserForInput();
         theGame->ProcessInput(result);
-        if (theGame->IsTimeToQuit())
+
+        if (theGame->DidPlayerWin())
         {
-            exit(0);
+            std::cout << "You won!";
+            if (theGame->AskToPlayAgain())
+            {
+                theGame->PrintHelp();
+                theGame->ResetBoard();
+            }
+            else
+            {
+                theGame->Quit();
+            }
+        }
+
+        if (theGame->DidComputerWin())
+        {
+            std::cout << "The Computer won!";
+            if (theGame->AskToPlayAgain())
+            {
+                theGame->PrintHelp();
+                theGame->ResetBoard();
+            }
+            else
+            {
+                theGame->Quit();
+            }
+        }
+
+        if (theGame->IsGameADraw())
+        {
+            std::cout << "The game is a draw!";
+            if (theGame->AskToPlayAgain())
+            {
+                theGame->PrintHelp();
+                theGame->ResetBoard();
+            }
+            else
+            {
+                theGame->Quit();
+            }
         }
     }
+
+
 
 
 

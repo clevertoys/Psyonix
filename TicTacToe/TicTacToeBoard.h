@@ -47,6 +47,9 @@ public:
     bool IsGameADraw();
 
 
+    void ResetBoard();
+
+    bool AskToPlayAgain();
 
     // Marking this method as static as it does not depend on any members of the instance. Might change this for simplicity of use,
     // But wanted to at least make this observation
@@ -62,7 +65,6 @@ private:
 
     void ResizeBoard(std::uint8_t width, std::uint8_t height);
 
-    void ResetBoard();
 
     void PlacePlayerPiece(std::uint8_t location);
 
@@ -94,7 +96,6 @@ private:
 
     uint8_t GetInputNumber(std::string input);
 
-    bool AskToPlayAgain();
 
 
     // The dimensions of the board
