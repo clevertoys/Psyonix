@@ -12,20 +12,22 @@ int main()
     TicTacToeBoard* theGame = new TicTacToeBoard(3, 3);
 
     TicTacToeBoard::PrintHelp();
+    theGame->PrintBoard();
 
     while (!theGame->IsTimeToQuit())
     {
-        theGame->PrintBoard();
+
         std::string result = theGame->AskUserForInput();
         theGame->ProcessInput(result);
 
-        if (theGame->DidPlayerWin())
+        if (theGame->DidSomeoneWin(TicTacToeBoard::cPlayerPiece))
         {
-            std::cout << "You won!";
+            std::cout << "You won!\n";
             if (theGame->AskToPlayAgain())
             {
                 theGame->PrintHelp();
                 theGame->ResetBoard();
+                theGame->PrintBoard();
             }
             else
             {
@@ -33,13 +35,14 @@ int main()
             }
         }
 
-        if (theGame->DidComputerWin())
+        if (theGame->DidSomeoneWin(TicTacToeBoard::cComputerPiece))
         {
-            std::cout << "The Computer won!";
+            std::cout << "The Computer won!\n";
             if (theGame->AskToPlayAgain())
             {
                 theGame->PrintHelp();
                 theGame->ResetBoard();
+                theGame->PrintBoard();
             }
             else
             {
@@ -49,11 +52,12 @@ int main()
 
         if (theGame->IsGameADraw())
         {
-            std::cout << "The game is a draw!";
+            std::cout << "The game is a draw!\n";
             if (theGame->AskToPlayAgain())
             {
                 theGame->PrintHelp();
                 theGame->ResetBoard();
+                theGame->PrintBoard();
             }
             else
             {

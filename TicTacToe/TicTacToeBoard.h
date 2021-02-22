@@ -21,6 +21,10 @@ class TicTacToeBoard
 {
 public:
 
+    static const char cPlayerPiece = 'X';
+    static const char cComputerPiece = 'O';
+
+
     TicTacToeBoard(std::uint8_t width, std::uint8_t height);
 
     // This is the public interface for playing the game, resizing the board, etc.
@@ -40,12 +44,9 @@ public:
 
     void Undo();
 
-    bool DidPlayerWin();
-
-    bool DidComputerWin();
+    bool DidSomeoneWin(const char piece);
 
     bool IsGameADraw();
-
 
     void ResetBoard();
 
@@ -74,13 +75,9 @@ private:
 
     int CalculateBestComputerMove();
 
-    bool CanRowBeWon(std::uint8_t row);
-    bool CanColumnBeWon(std::uint8_t row);
-    bool CanDiagonalBeWon();
-
-    bool HasDiagonalBeenWon();
-    bool HasRowBeenWon(std::uint8_t row);
-    bool HasColumnBeenWon(std::uint8_t row);
+    bool HasDiagonalBeenWon(std::uint8_t diag, const char piece);
+    bool HasRowBeenWon(std::uint8_t row, const char piece);
+    bool HasColumnBeenWon(std::uint8_t row, const char piece);
 
     // These functions return the empty square that remains in a row or column that a player
     // is about to win. If the player is not about to win, they return -1
@@ -120,8 +117,6 @@ private:
 
     bool bTimeToQuit = false;
 
-    static const char cPlayerPiece = 'X';
-    static const char cComputerPiece = 'O';
 
 };
 

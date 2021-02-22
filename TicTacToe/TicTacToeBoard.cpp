@@ -59,7 +59,7 @@ void TicTacToeBoard::PlacePlayerPiece(std::uint8_t location)
 	cBoard[location] = cPlayerPiece;
 	iMoves[iNumMovesMadeSoFar++] = location;
 	PrintBoard();
-	if (DidPlayerWin() || IsGameADraw()) return;
+	if (DidSomeoneWin(cPlayerPiece) || IsGameADraw()) return;
 
 	std::cout << "It is now the Computer's turn...\n";
 	int computerMoveLocation = CalculateBestComputerMove();
@@ -106,7 +106,7 @@ bool TicTacToeBoard::IsLegalPlayerMove(uint8_t moveLocation)
 }
 
 void TicTacToeBoard::PrintBoard() {
-	std::cout << "\n\nHere is the current state of the board:\n\n";
+	//std::cout << "\n\nHere is the current state of the board:\n\n";
 	PrintRowOfDashes();
 
 	for (std::uint8_t y = 0; y < iBoardHeight; y++)
@@ -195,72 +195,72 @@ bool TicTacToeBoard::ProcessInput(std::string input)
 	}
 	else if (input == "reset")
 	{
-		ResetBoard();
-		return true;
+	ResetBoard();
+	return true;
 	}
 	else if (IsInputANumber(input))
 	{
-		uint8_t location = GetInputNumber(input);
-		// Attempt to place the player piece
-		if (IsLegalPlayerMove(location))
-		{
-			PlacePlayerPiece(location);
-			return true;
-		}
-		else
-		{
-			std::cout << "Illegal move, please try again!\n";
-			return false;
-		}
-	}
-	else if (input == "resize")
+	uint8_t location = GetInputNumber(input);
+	// Attempt to place the player piece
+	if (IsLegalPlayerMove(location))
 	{
-		uint8_t newWidth = 3;
-		uint8_t newHeight = 3;
-		std::string inputString;
-
-
-		std::cout << "Please enter a new width (min of 3):\n";
-		std::cin >> inputString;
-		while (!IsInputANumber(inputString))
-		{
-			std::cout << "Invalid number! Please enter a new width (min of 3):\n";
-			std::cout << "Please enter a new width (min of 3):\n";
-			std::cin >> inputString;
-		}
-		newWidth = GetInputNumber(inputString);
-
-		std::cout << "Please enter a new height (min of 3):\n";
-		std::cin >> inputString;
-		while (!IsInputANumber(inputString))
-		{
-			std::cout << "Please enter a new width (min of 3):\n";
-			std::cin >> inputString;
-		}
-		newHeight = GetInputNumber(inputString);
-
-		std::cout << "New board size is now ";
-		std::cout << newWidth + "X" + newHeight;
-		// TODO prompt for and validate new sizes
-
-		ResizeBoard(newWidth, newHeight);
-		return true;
-
-	}
-	else if (input == "undo")
-	{
-		Undo();
-		return true;
-	}
-	else if (input == "quit")
-	{
-		Quit();
+		PlacePlayerPiece(location);
 		return true;
 	}
 	else
 	{
-		std::cout << "That command was not understood, please try again. Type ""help"" for instructinos\n";
+		std::cout << "Illegal move, please try again!\n";
 		return false;
+	}
+	}
+	else if (input == "resize")
+	{
+	uint8_t newWidth = 3;
+	uint8_t newHeight = 3;
+	std::string inputString;
+
+
+	std::cout << "Please enter a new width (min of 3):\n";
+	std::cin >> inputString;
+	while (!IsInputANumber(inputString))
+	{
+		std::cout << "Invalid number! Please enter a new width (min of 3):\n";
+		std::cout << "Please enter a new width (min of 3):\n";
+		std::cin >> inputString;
+	}
+	newWidth = GetInputNumber(inputString);
+
+	std::cout << "Please enter a new height (min of 3):\n";
+	std::cin >> inputString;
+	while (!IsInputANumber(inputString))
+	{
+		std::cout << "Please enter a new width (min of 3):\n";
+		std::cin >> inputString;
+	}
+	newHeight = GetInputNumber(inputString);
+
+	std::cout << "New board size is now ";
+	std::cout << newWidth + "X" + newHeight;
+	// TODO prompt for and validate new sizes
+
+	ResizeBoard(newWidth, newHeight);
+	return true;
+
+	}
+	else if (input == "undo")
+	{
+	Undo();
+	return true;
+	}
+	else if (input == "quit")
+	{
+	Quit();
+	return true;
+	}
+	else
+	{
+	std::cout << "That command was not understood, please try again. Type ""help"" for instructinos\n";
+	return false;
 	}
 }
 void TicTacToeBoard::Quit()
@@ -281,86 +281,40 @@ void  TicTacToeBoard::Undo()
 	if (iNumMovesMadeSoFar == 0) return;
 
 	// Assume at least two moves have been made, one by the player, followed by one from the computer. Back both of those off
-	cBoard[iMoves[iNumMovesMadeSoFar-1]] = ' ';
+	cBoard[iMoves[iNumMovesMadeSoFar - 1]] = ' ';
 	iNumMovesMadeSoFar--;
-	cBoard[iMoves[iNumMovesMadeSoFar-1]] = ' ';
+	cBoard[iMoves[iNumMovesMadeSoFar - 1]] = ' ';
 	iNumMovesMadeSoFar--;
 
 	PrintBoard();
 }
 
-bool TicTacToeBoard::DidPlayerWin()
+bool TicTacToeBoard::DidSomeoneWin(const char piece)
 {
-	if (iNumMovesMadeSoFar == 0) return false;
-	// Based on the last move the player made, check all the possible wins from that location
-	// Note that if the numMoves made so far is an odd number, then the last item in the list is a plyer move
-	// If the number of moves made so far is even, then the computer made the last move
-	std::uint8_t lastPlayerLocation = 0;
-	if (iNumMovesMadeSoFar % 2 == 0)
+	if (iNumMovesMadeSoFar < 6) return false;
+
+	for (int row = 0; row < iBoardHeight; row++)
 	{
-		lastPlayerLocation = iMoves[iNumMovesMadeSoFar - 1];
+		if (HasRowBeenWon(row, piece)) return true;
 	}
-	else
+	for (int col = 0; col < iBoardWidth; col++)
 	{
-		lastPlayerLocation = iMoves[iNumMovesMadeSoFar - 1];
+		if (HasColumnBeenWon(col, piece)) return true;
 	}
 
-	std::uint8_t row = WhichRow(lastPlayerLocation);
-	if (HasRowBeenWon(row) && cBoard[lastPlayerLocation] == cPlayerPiece) return true;
+	if (HasDiagonalBeenWon(0, piece)) return true;
+	if (HasDiagonalBeenWon(1, piece)) return true;
 
-	std::uint8_t col = WhichColumn(lastPlayerLocation);
-	if (HasColumnBeenWon(col) && cBoard[lastPlayerLocation] == cPlayerPiece) return true;
-
-	if (HasDiagonalBeenWon() && cBoard[lastPlayerLocation] == cPlayerPiece) return true;
-	return false;
-}
-
-bool TicTacToeBoard::DidComputerWin()
-{
-	if (iNumMovesMadeSoFar <= 2) return false;
-
-	std::uint8_t lastCompouterLocation = 0;
-	if (iNumMovesMadeSoFar % 2 != 0)
-	{
-		lastCompouterLocation = iMoves[iNumMovesMadeSoFar - 2];
-	}
-	else
-	{
-		lastCompouterLocation = iMoves[iNumMovesMadeSoFar - 1];
-	}
-	std::uint8_t row = WhichRow(lastCompouterLocation);
-	if (HasRowBeenWon(row) && cBoard[lastCompouterLocation] == cComputerPiece) return true;
-
-	std::uint8_t col = WhichColumn(lastCompouterLocation);
-	if (HasColumnBeenWon(col) && cBoard[lastCompouterLocation] == cComputerPiece) return true;
-
-	if (HasDiagonalBeenWon() && cBoard[lastCompouterLocation] == cComputerPiece) return true;
 	return false;
 }
 
 bool TicTacToeBoard::IsGameADraw()
 {
-	if (iNumMovesMadeSoFar == 0) return false;
+	if (iNumMovesMadeSoFar != iBoardHeight * iBoardWidth) return false;
 
-	std::uint8_t colsWhichCanBeWon = 0;
-	std::uint8_t rowsWhichCanBeWon = 0;
-	std::uint8_t DiagonalsWhichCanBeWon = 0;
-
-	// Check if any possible win (full row, full column, full diagonal) have any possible wins by either player
-	for (int x = 0; x < iBoardWidth; x++)
-	{
-		if (CanColumnBeWon(x)) colsWhichCanBeWon++;
-	}
-	for (int y = 0; y < iBoardHeight; y++)
-	{
-		if (CanRowBeWon(y)) rowsWhichCanBeWon++;
-	}
-
-	// TODO Check diagonal win possibilities
-
-	if (colsWhichCanBeWon == 0 && rowsWhichCanBeWon == 0 && !CanDiagonalBeWon()) return true;
-
-	return false;
+	if (DidSomeoneWin(cComputerPiece)) return false;
+	if (DidSomeoneWin(cPlayerPiece)) return false;
+	return true;
 }
 std::uint8_t TicTacToeBoard::WhichRow(std::uint8_t location)
 {
@@ -429,90 +383,53 @@ int TicTacToeBoard::CalculateBestComputerMove()
 	}
 	return location;
 }
-bool TicTacToeBoard::CanDiagonalBeWon()
+
+bool TicTacToeBoard::HasDiagonalBeenWon(std::uint8_t diag, const char piece)
 {
-	int numXsFound = 0;
-	int numOsFound = 0;
-	// Check the first diagonal
-	for (int loc = iBoardWidth - 1; loc < iBoardWidth * iBoardHeight - 1; loc += (iBoardWidth - 1))
-	{
-		if (cBoard[loc] == cPlayerPiece) numXsFound++;
-		else if (cBoard[loc] == cComputerPiece) numOsFound++;
-	}
-	if (numOsFound == 0) return true;
-	if (numXsFound == 0) return true;
+	int numPiecesFound = 0;
 
-	// Check the second diagonal
-	numXsFound = 0;
-	numOsFound = 0;
-	for (int loc = 0; loc < iBoardWidth * iBoardHeight; loc += (iBoardWidth + 1))
+	int increment = iBoardWidth + 1;
+	int location = 0;
+	if (diag == 1)
 	{
-		if (cBoard[loc] == cPlayerPiece) numXsFound++;
-		else if (cBoard[loc] == cComputerPiece) numOsFound++;
+		increment = -(iBoardWidth + 1);
+		location = iBoardWidth - 1;
 	}
-	if (numOsFound == 0) return true;
-	if (numXsFound == 0) return true;
 
+	for (int i = 0; i < iBoardWidth; i++)
+	{
+		if (cBoard[location] == piece)
+		{
+			numPiecesFound++;
+		}
+		location += increment;
+	}
+	if (numPiecesFound == iBoardWidth) return true;
 	return false;
 }
 
-bool TicTacToeBoard::HasDiagonalBeenWon()
+bool TicTacToeBoard::HasRowBeenWon(std::uint8_t row, const char piece)
 {
-	int numXsFound = 0;
-	int numOsFound = 0;
-
-	// Check the first diagonal
-	for (int loc = iBoardWidth-1; loc < iBoardWidth * iBoardHeight-1; loc += (iBoardWidth - 1))
-	{
-		if (cBoard[loc] == cPlayerPiece) numXsFound++;
-		else if (cBoard[loc] == cComputerPiece) numOsFound++;
-		if (numXsFound == std::max(iBoardWidth, iBoardHeight)) return true;
-		if (numOsFound == std::max(iBoardWidth, iBoardHeight)) return true;
-	}
-
-
-	// Check the second diagonal
-	numXsFound = 0;
-	numOsFound = 0;
-	for (int loc = 0; loc < iBoardWidth * iBoardHeight; loc += (iBoardWidth + 1))
-	{
-		if (cBoard[loc] == cPlayerPiece) numXsFound++;
-		else if (cBoard[loc] == cComputerPiece) numOsFound++;
-		if (numXsFound == std::max(iBoardWidth, iBoardHeight)) return true;
-		if (numOsFound == std::max(iBoardWidth, iBoardHeight)) return true;
-	}
-
-	return false;
-}
-
-bool TicTacToeBoard::HasRowBeenWon(std::uint8_t row)
-{
-	int numXsFound = 0;
-	int numOsFound = 0;
+	int numPiecesFound = 0;
 	for (int x = 0; x < iBoardWidth; x++)
 	{
 		uint8_t location = (row * iBoardWidth) + x;
-		if (cBoard[location] == cPlayerPiece) numXsFound++;
-		else if (cBoard[location] == cComputerPiece) numOsFound++;
+		if (cBoard[location] == piece) numPiecesFound++;
 	}
-	if (numXsFound == iBoardWidth) return true;
-	if (numOsFound == iBoardWidth) return true;
+	if (numPiecesFound == iBoardWidth) return true;
 
 	return false;
 }
 
-bool TicTacToeBoard::HasColumnBeenWon(std::uint8_t col)
+bool TicTacToeBoard::HasColumnBeenWon(std::uint8_t col, const char piece)
 {
-	int numXsFound = 0;
-	int numOsFound = 0;
+	int numPiecesFound = 0;
 	for (int y = 0; y < iBoardHeight; y++)
 	{
 		uint8_t location = (y * iBoardWidth) + col;
-		if (cBoard[location] == cPlayerPiece) numXsFound++;
-		else if (cBoard[location] == cComputerPiece) numOsFound++;
+		if (cBoard[location] == piece) numPiecesFound++;
 	}
-	if (numXsFound == iBoardHeight) return true;
-	if (numOsFound == iBoardHeight) return true;
+	if (numPiecesFound == iBoardHeight) return true;
 	return false;
 }
 
@@ -586,40 +503,6 @@ int TicTacToeBoard::CheckSomeoneAboutToWinDiag(std::uint8_t diag, const char pie
 	if (numPiecesFound == iBoardWidth - 1) return blankSquare;
 	return -1;
 }
-
-
-bool TicTacToeBoard::CanRowBeWon(std::uint8_t row)
-{
-	int numXsFound = 0;
-	int numOsFound = 0;
-	for (int x = 0; x < iBoardWidth; x++)
-	{
-		uint8_t location = (row * iBoardWidth) + x;
-		if (cBoard[location] == cPlayerPiece) numXsFound++;
-		else if (cBoard[location] == cComputerPiece) numOsFound++;
-	}
-	if (numXsFound + numOsFound == 0) return true;
-	if (numXsFound != 0 && numOsFound == 0) return true;
-	if (numOsFound != 0 && numXsFound == 0) return true;
-	return false;
-}
-
-bool TicTacToeBoard::CanColumnBeWon(std::uint8_t col)
-{
-	int numXsFound = 0;
-	int numOsFound = 0;
-	for (int y = 0; y < iBoardHeight; y++)
-	{
-		uint8_t location = (y * iBoardWidth) + col;
-		if (cBoard[location] == cPlayerPiece) numXsFound++;
-		else if (cBoard[location] == cComputerPiece) numOsFound++;
-	}
-	if (numXsFound + numOsFound == 0) return true;
-	if (numXsFound != 0 && numOsFound == 0) return true;
-	if (numOsFound != 0 && numXsFound == 0) return true;
-	return false;
-}
-
 
 void TicTacToeBoard::PrintHelp()
 {
