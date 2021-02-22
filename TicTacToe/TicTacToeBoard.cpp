@@ -153,7 +153,7 @@ std::string TicTacToeBoard::AskUserForInput()
 	return inputResult;
 }
 
-bool TicTacToeBoard::IsInputANumber(std::string input) const
+bool TicTacToeBoard::IsInputANumber(const std::string input) const
 {
 	char* end;
 	int number = (int)strtol(input.c_str(), &end, 10);
@@ -164,7 +164,7 @@ bool TicTacToeBoard::IsInputANumber(std::string input) const
 	return true;
 }
 
-int TicTacToeBoard::GetInputNumber(std::string input) const
+int TicTacToeBoard::GetInputNumber(const std::string input) const
 {
 	char* end;
 	return (int)strtol(input.c_str(), &end, 10);
@@ -190,7 +190,7 @@ bool TicTacToeBoard::AskToPlayAgain()
 }
 
 // Returns true if input was valid/legal and succeeded, else false
-bool TicTacToeBoard::ProcessInput(std::string input)
+bool TicTacToeBoard::ProcessInput(const std::string input)
 {
 	// I would normally use a more advanced data structure or more standard input parsing 
 	// system, but I understand the instructions to be keep things as simple as possible with as

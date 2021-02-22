@@ -97,9 +97,9 @@ private:
 
     void PrintRowOfDashes() const;
 
-    bool IsInputANumber(std::string input) const;
+    bool IsInputANumber(const std::string input) const;
 
-    int GetInputNumber(std::string input) const;
+    int GetInputNumber(const std::string input) const;
 
 
 
