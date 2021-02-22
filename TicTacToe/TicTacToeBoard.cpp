@@ -17,7 +17,7 @@
 // changing over to a more standard form of one header plus one impl file and then using the header in the main app cpp file.
 
 
-TicTacToeBoard::TicTacToeBoard(std::uint8_t width, std::uint8_t height)
+TicTacToeBoard::TicTacToeBoard(int width, int height)
 {
 	iBoardWidth = width;
 	iBoardHeight = height;
@@ -34,7 +34,7 @@ TicTacToeBoard::~TicTacToeBoard()
 	delete[] iMoves;
 }
 
-void TicTacToeBoard::ResizeBoard(std::uint8_t width, std::uint8_t height)
+void TicTacToeBoard::ResizeBoard(int width, int height)
 {
 	delete[] cBoard;
 	iBoardWidth = width;
@@ -45,14 +45,14 @@ void TicTacToeBoard::ResizeBoard(std::uint8_t width, std::uint8_t height)
 
 void TicTacToeBoard::ResetBoard()
 {
-	for (std::uint8_t i = 0; i < iBoardWidth * iBoardHeight; i++)
+	for (int i = 0; i < iBoardWidth * iBoardHeight; i++)
 	{
 		cBoard[i] = ' ';
 	}
 	iNumMovesMadeSoFar = 0;
 }
 
-void TicTacToeBoard::PlacePlayerPiece(std::uint8_t location)
+void TicTacToeBoard::PlacePlayerPiece(int location)
 {
 	// TODO extra validation here?
 
@@ -66,7 +66,7 @@ void TicTacToeBoard::PlacePlayerPiece(std::uint8_t location)
 	PlaceComputerPiece(computerMoveLocation);
 	PrintBoard();
 }
-void TicTacToeBoard::PlaceComputerPiece(std::uint8_t location)
+void TicTacToeBoard::PlaceComputerPiece(int location)
 {
 	cBoard[location] = cComputerPiece;
 	iMoves[iNumMovesMadeSoFar++] = location;
@@ -91,7 +91,7 @@ void TicTacToeBoard::CheckAndAdjustSizes()
 void TicTacToeBoard::AllocateBoardMemory()
 {
 	cBoard = new char[iBoardWidth * iBoardHeight];
-	iMoves = new std::uint8_t[iBoardWidth * iBoardHeight];
+	iMoves = new int[iBoardWidth * iBoardHeight];
 	iNumMovesMadeSoFar = 0;
 	ResetBoard();
 }
@@ -109,11 +109,11 @@ void TicTacToeBoard::PrintBoard() {
 	//std::cout << "\n\nHere is the current state of the board:\n\n";
 	PrintRowOfDashes();
 
-	for (std::uint8_t y = 0; y < iBoardHeight; y++)
+	for (int y = 0; y < iBoardHeight; y++)
 	{
 		// Print a row of squares, starting with a vertical dash and some nice spacing between 
 		// each square
-		for (std::uint8_t x = 0; x < iBoardWidth; x++)
+		for (int x = 0; x < iBoardWidth; x++)
 		{
 			std::cout << "| ";
 			std::cout << cBoard[y * iBoardWidth + x];
@@ -130,7 +130,7 @@ void TicTacToeBoard::PrintBoard() {
 
 void TicTacToeBoard::PrintRowOfDashes()
 {
-	for (std::uint8_t x = 0; x < (iBoardWidth * 4) + 1; x++) std::cout << "-";
+	for (int x = 0; x < (iBoardWidth * 4) + 1; x++) std::cout << "-";
 	std::cout << "\n";
 }
 
@@ -316,13 +316,13 @@ bool TicTacToeBoard::IsGameADraw()
 	if (DidSomeoneWin(cPlayerPiece)) return false;
 	return true;
 }
-std::uint8_t TicTacToeBoard::WhichRow(std::uint8_t location)
+int TicTacToeBoard::WhichRow(int location)
 {
-	return (std::uint8_t)(location / iBoardHeight);
+	return (int)(location / iBoardHeight);
 }
-std::uint8_t TicTacToeBoard::WhichColumn(std::uint8_t location)
+int TicTacToeBoard::WhichColumn(int location)
 {
-	return (std::uint8_t)(location % iBoardWidth);
+	return (int)(location % iBoardWidth);
 }
 
 int TicTacToeBoard::CalculateBestComputerMove()
@@ -374,8 +374,8 @@ int TicTacToeBoard::CalculateBestComputerMove()
 	if (location != -1) return location;
 
 	// Just pick a random one for now, later we will pick a 'smart' one
-	std::uint8_t min = 0;
-	std::uint8_t max = iBoardHeight * iBoardWidth - 1;
+	int min = 0;
+	int max = iBoardHeight * iBoardWidth - 1;
 	location = min + (rand() % static_cast<int>(max - min + 1));
 	while (cBoard[location] != ' ')
 	{
@@ -384,7 +384,7 @@ int TicTacToeBoard::CalculateBestComputerMove()
 	return location;
 }
 
-bool TicTacToeBoard::HasDiagonalBeenWon(std::uint8_t diag, const char piece)
+bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece)
 {
 	int numPiecesFound = 0;
 
@@ -408,7 +408,7 @@ bool TicTacToeBoard::HasDiagonalBeenWon(std::uint8_t diag, const char piece)
 	return false;
 }
 
-bool TicTacToeBoard::HasRowBeenWon(std::uint8_t row, const char piece)
+bool TicTacToeBoard::HasRowBeenWon(int row, const char piece)
 {
 	int numPiecesFound = 0;
 	for (int x = 0; x < iBoardWidth; x++)
@@ -421,7 +421,7 @@ bool TicTacToeBoard::HasRowBeenWon(std::uint8_t row, const char piece)
 	return false;
 }
 
-bool TicTacToeBoard::HasColumnBeenWon(std::uint8_t col, const char piece)
+bool TicTacToeBoard::HasColumnBeenWon(int col, const char piece)
 {
 	int numPiecesFound = 0;
 	for (int y = 0; y < iBoardHeight; y++)
@@ -433,7 +433,7 @@ bool TicTacToeBoard::HasColumnBeenWon(std::uint8_t col, const char piece)
 	return false;
 }
 
-int TicTacToeBoard::CheckSomeoneAboutToWinRow(std::uint8_t row, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinRow(int row, const char piece)
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
@@ -453,7 +453,7 @@ int TicTacToeBoard::CheckSomeoneAboutToWinRow(std::uint8_t row, const char piece
 	return -1;
 }
 
-int TicTacToeBoard::CheckSomeoneAboutToWinCol(std::uint8_t col, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece)
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
@@ -474,7 +474,7 @@ int TicTacToeBoard::CheckSomeoneAboutToWinCol(std::uint8_t col, const char piece
 }
 
 // This is a bit screwy if the board is non square... I will do some research on it...
-int TicTacToeBoard::CheckSomeoneAboutToWinDiag(std::uint8_t diag, const char piece)
+int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int diag, const char piece)
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
