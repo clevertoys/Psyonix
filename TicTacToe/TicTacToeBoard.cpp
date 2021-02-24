@@ -43,6 +43,7 @@ void TicTacToeBoard::ResizeBoard(int width, int height)
 	assert(height > 2);
 
 	delete[] cBoard;
+	delete[] iMoves;
 	iBoardWidth = width;
 	iBoardHeight = height;
 	CheckAndAdjustSizes();
@@ -253,7 +254,6 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 		newHeight = GetInputNumber(inputString);
 
 		std::cout << "New board size is now " << newWidth << "X" << newHeight << "\n";
-		// TODO prompt for and validate new sizes
 
 		ResizeBoard(newWidth, newHeight);
 		PrintBoard();
