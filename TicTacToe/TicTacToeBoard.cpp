@@ -37,13 +37,14 @@ TicTacToeBoard::~TicTacToeBoard()
 	delete[] iMoves;
 }
 
-void TicTacToeBoard::ResizeBoard(int size)
+void TicTacToeBoard::ResizeBoard(int width, int height)
 {
-	assert(size > 2);
+	assert(width > 2);
+	assert(height > 2);
 
 	delete[] cBoard;
-	iBoardWidth = size;
-	iBoardHeight = size;
+	iBoardWidth = width;
+	iBoardHeight = height;
 	CheckAndAdjustSizes();
 	AllocateBoardMemory();
 }
@@ -109,7 +110,7 @@ void TicTacToeBoard::AllocateBoardMemory()
 
 bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation) const
 {
-	if (moveLocation >= iBoardHeight * iBoardHeight) return false;
+	if (moveLocation >= iBoardWidth * iBoardHeight) return false;
 	if (moveLocation < 0) return false;
 
 	if (cBoard[moveLocation] == ' ') return true;
@@ -179,7 +180,7 @@ bool TicTacToeBoard::AskToPlayAgain()
 	std::string response;
 	std::cin >> response;
 
- 
+
 	if (response == "n" || response == "no")
 		return false;
 
@@ -206,62 +207,73 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 	}
 	else if (input == "reset")
 	{
-	ResetBoard();
-	return true;
+		ResetBoard();
+		return true;
 	}
 	else if (IsInputANumber(input))
 	{
-	int location = GetInputNumber(input);
-	// Attempt to place the player piece
-	if (IsLegalPlayerMove(location))
-	{
-		PlacePlayerPiece(location);
-		return true;
-	}
-	else
-	{
-		std::cout << "Illegal move, please try again!\n";
-		return false;
-	}
+		int location = GetInputNumber(input);
+		// Attempt to place the player piece
+		if (IsLegalPlayerMove(location))
+		{
+			PlacePlayerPiece(location);
+			return true;
+		}
+		else
+		{
+			std::cout << "Illegal move, please try again!\n";
+			return false;
+		}
 	}
 	else if (input == "resize")
 	{
-	int newSize = 3;
-	std::string inputString;
+		int newWidth = 3;
+		int newHeight = 3;
+		std::string inputString;
 
 
-	std::cout << "Please enter a new size (min of 3):\n";
-	std::cin >> inputString;
-	while (!IsInputANumber(inputString))
-	{
-		std::cout << "Invalid number! Please enter a new width (min of 3):\n";
 		std::cout << "Please enter a new width (min of 3):\n";
 		std::cin >> inputString;
-	}
-	newSize = GetInputNumber(inputString);
+		while (!IsInputANumber(inputString))
+		{
+			std::cout << "Invalid number! Please enter a new width (min of 3):\n";
+			std::cout << "Please enter a new width (min of 3):\n";
+			std::cin >> inputString;
+		}
+		newWidth = GetInputNumber(inputString);
 
-	std::cout << "New board size is now " << newSize << "X" << newSize << "\n";
-	// TODO prompt for and validate new sizes
+		std::cout << "Please enter a new height (min of 3):\n";
+		std::cin >> inputString;
+		while (!IsInputANumber(inputString))
+		{
+			std::cout << "Invalid number! Please enter a new height (min of 3):\n";
+			std::cout << "Please enter a new width (min of 3):\n";
+			std::cin >> inputString;
+		}
+		newHeight = GetInputNumber(inputString);
 
-	ResizeBoard(newSize);
-	PrintBoard();
-	return true;
+		std::cout << "New board size is now " << newWidth << "X" << newHeight << "\n";
+		// TODO prompt for and validate new sizes
+
+		ResizeBoard(newWidth, newHeight);
+		PrintBoard();
+		return true;
 
 	}
 	else if (input == "undo")
 	{
-	Undo();
-	return true;
+		Undo();
+		return true;
 	}
 	else if (input == "quit")
 	{
-	Quit();
-	return true;
+		Quit();
+		return true;
 	}
 	else
 	{
-	std::cout << "That command was not understood, please try again. Type ""help"" for instructinos\n";
-	return false;
+		std::cout << "That command was not understood, please try again. Type ""help"" for instructinos\n";
+		return false;
 	}
 }
 void TicTacToeBoard::Quit()
@@ -303,8 +315,15 @@ bool TicTacToeBoard::DidSomeoneWin(const char piece) const
 		if (HasColumnBeenWon(col, piece)) return true;
 	}
 
-	if (HasDiagonalBeenWon(0, piece)) return true;
-	if (HasDiagonalBeenWon(1, piece)) return true;
+
+	// We now allow diagonals to be "won" no matter where they start along the top row.
+	// We allow such a win to "wrap" around off either edge. Strange but fun. It basically 
+	// maps the board onto a Torus :) :)
+	for (int x = 0; x < iBoardWidth; x++)
+	{
+		if (HasDiagonalBeenWon(x, true, piece)) return true;
+		if (HasDiagonalBeenWon(x, false, piece)) return true;
+	}
 
 	return false;
 }
@@ -350,10 +369,13 @@ int TicTacToeBoard::CalculateBestComputerMove() const
 	}
 
 	// Check if we are about to win diagonally
-	location = CheckSomeoneAboutToWinDiag(0, cComputerPiece);
-	if (location != -1) return location;
-	location = CheckSomeoneAboutToWinDiag(1, cComputerPiece);
-	if (location != -1) return location;
+	for (int x = 0; x < iBoardWidth; x++)
+	{
+		location = CheckSomeoneAboutToWinDiag(x, true, cComputerPiece);
+		if (location != -1) return location;
+		location = CheckSomeoneAboutToWinDiag(x, false, cComputerPiece);
+		if (location != -1) return location;
+	}
 
 	// Now check for good row and column blocking moves
 	for (int x = 0; x < iBoardWidth; x++)
@@ -368,11 +390,14 @@ int TicTacToeBoard::CalculateBestComputerMove() const
 		if (location != -1) return location;
 	}
 
-	// Check if we are about to win diagonally
-	location = CheckSomeoneAboutToWinDiag(0, cComputerPiece);
-	if (location != -1) return location;
-	location = CheckSomeoneAboutToWinDiag(1, cComputerPiece);
-	if (location != -1) return location;
+	// Check if they are about to win diagonally
+	for (int x = 0; x < iBoardWidth; x++)
+	{
+		location = CheckSomeoneAboutToWinDiag(x, true, cPlayerPiece);
+		if (location != -1) return location;
+		location = CheckSomeoneAboutToWinDiag(x, false, cPlayerPiece);
+		if (location != -1) return location;
+	}
 
 	// Just pick a random one for now, later we will pick a 'smart' one
 	int min = 0;
@@ -385,27 +410,48 @@ int TicTacToeBoard::CalculateBestComputerMove() const
 	return location;
 }
 
-bool TicTacToeBoard::HasDiagonalBeenWon(int diag, const char piece) const
+// OK, so I found a rule that works well for definition of a diagonal win for non square boards. 
+// Basically if you can find a diagonal set of squares starting at any top row location and 
+// proceeding either forward+down or backward+down, then you can call that a win. 
+// EXTRA: If you allow such a diagonal to "wrap" off either edge of the board you get essentially
+// tictactoe mapped on to a Torus (spatially). I won't bother rendering this as a Torus, but if
+// were doing this with 3D graphics, you could totally render it that way. I have gon ahead and enabled
+// this feature (see the modulo increment below) but could control it with a param or whatever.
+bool TicTacToeBoard::HasDiagonalBeenWon(int topRowStartLocation, bool forward, const char piece) const
 {
 	int numPiecesFound = 0;
 
-	int increment = iBoardWidth + 1;
-	int location = 0;
-	if (diag == 1)
-	{
-		increment = (iBoardWidth - 1);
-		location = iBoardWidth - 1;
-	}
+	int column = topRowStartLocation;
+	int row = 0;
+	int boardSize = iBoardWidth * iBoardHeight;
+	int rowIncrement = 1;
 
-	for (int i = 0; i < iBoardWidth; i++)
+	if (!forward)
+		rowIncrement = -1;
+
+	for (int i = 0; i < iBoardHeight; i++)
 	{
+		int location = (row * iBoardWidth + column) % boardSize;
+
 		if (cBoard[location] == piece)
 		{
 			numPiecesFound++;
 		}
-		location += increment;
+
+		if (forward)
+		{
+			column++;
+			column %= iBoardWidth;
+		}
+		else
+		{
+			column += iBoardWidth;
+			column %= iBoardWidth;
+		}
+
+
 	}
-	if (numPiecesFound == iBoardWidth) return true;
+	if (numPiecesFound == iBoardHeight) return true;
 	return false;
 }
 
@@ -465,7 +511,7 @@ int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece) const
 		{
 			numPiecesFound++;
 		}
-		else if(cBoard[location] == ' ')
+		else if (cBoard[location] == ' ')
 		{
 			blankSquare = location;
 		}
@@ -475,21 +521,22 @@ int TicTacToeBoard::CheckSomeoneAboutToWinCol(int col, const char piece) const
 }
 
 // This is a bit screwy if the board is non square... I will do some research on it...
-int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int diag, const char piece) const
+int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int topRowStartLocation, bool forward, const char piece) const
 {
 	int numPiecesFound = 0;
 	int blankSquare = -1;
+	int column = topRowStartLocation;
+	int row = 0;
+	int boardSize = iBoardWidth * iBoardHeight;
+	int rowIncrement = 1;
 
-	int increment = iBoardWidth + 1;
-	int location = 0;
-	if (diag == 1)
-	{
-		increment = -(iBoardWidth + 1);
-		location = iBoardWidth - 1;
-	}
+	if (!forward)
+		rowIncrement = -1;
 
-	for (int i = 0; i < iBoardWidth; i++)
+	for (int i = 0; i < iBoardHeight; i++)
 	{
+		int location = (row * iBoardWidth + column) % boardSize;
+
 		if (cBoard[location] == piece)
 		{
 			numPiecesFound++;
@@ -499,9 +546,19 @@ int TicTacToeBoard::CheckSomeoneAboutToWinDiag(int diag, const char piece) const
 			blankSquare = location;
 		}
 
-		location += increment;
+
+		if (forward)
+		{
+			column++;
+			column %= iBoardWidth;
+		}
+		else
+		{
+			column += iBoardWidth;
+			column %= iBoardWidth;
+		}
 	}
-	if (numPiecesFound == iBoardWidth - 1) return blankSquare;
+	if (numPiecesFound == iBoardHeight-1) return blankSquare;
 	return -1;
 }
 
