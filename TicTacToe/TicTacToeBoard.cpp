@@ -119,13 +119,28 @@ bool TicTacToeBoard::IsLegalPlayerMove(int moveLocation) const
 }
 
 void TicTacToeBoard::PrintBoard() const {
+
+	// Print the column numbers
+	std::cout << "  ";
+	for (int x = 0; x < iBoardWidth; x++)
+	{
+		std::cout << "  " << x << " ";
+	}
+	std::cout << "\n";
+
 	//std::cout << "\n\nHere is the current state of the board:\n\n";
 	PrintRowOfDashes();
+
+
 
 	for (int y = 0; y < iBoardHeight; y++)
 	{
 		// Print a row of squares, starting with a vertical dash and some nice spacing between 
 		// each square
+
+		// print the row number
+		std::cout << y << " ";
+
 		for (int x = 0; x < iBoardWidth; x++)
 		{
 			std::cout << "| ";
@@ -143,6 +158,7 @@ void TicTacToeBoard::PrintBoard() const {
 
 void TicTacToeBoard::PrintRowOfDashes() const
 {
+	std::cout << "  ";
 	for (int x = 0; x < (iBoardWidth * 4) + 1; x++) std::cout << "-";
 	std::cout << "\n";
 }
@@ -157,21 +173,35 @@ std::string TicTacToeBoard::AskUserForInput()
 	return inputResult;
 }
 
-bool TicTacToeBoard::IsInputANumber(const std::string input) const
+bool TicTacToeBoard::IsInputAMoveLocation(const std::string input) const
 {
-	char* end;
-	int number = (int)strtol(input.c_str(), &end, 10);
-	if (end == input.c_str())
-	{
-		return false;
-	}
+	int x, y;
+	int result = sscanf_s(input.c_str(), "%u,%u)", &x, &y);
+
+	if (result == 2) return true;
+	return false;
+}
+
+bool TicTacToeBoard::IsInputAValidSize(const std::string input) const
+{
+	int x, y;
+	int result = sscanf_s(input.c_str(), "%u,%u)", &x, &y);
+
+	if (result != 2) return false;
+
+	if (x < 3 || y < 3 || x > 12 || y > 12) return false;
 	return true;
 }
 
-int TicTacToeBoard::GetInputNumber(const std::string input) const
+bool TicTacToeBoard::GetInputMoveLocation(const std::string input, int* x, int* y) const
 {
-	char* end;
-	return (int)strtol(input.c_str(), &end, 10);
+	assert(x != NULL);
+	assert(y != NULL);
+
+	int result = sscanf_s(input.c_str(), "%u,%u)", x, y);
+
+	if (result == 2) return true;
+	return false;
 }
 
 bool TicTacToeBoard::AskToPlayAgain()
@@ -211,9 +241,14 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 		ResetBoard();
 		return true;
 	}
-	else if (IsInputANumber(input))
+	else if (IsInputAMoveLocation(input))
 	{
-		int location = GetInputNumber(input);
+		int x, y;
+		bool result = GetInputMoveLocation(input, &x, &y);
+		assert(result);
+
+		int location = y * iBoardWidth + x;
+
 		// Attempt to place the player piece
 		if (IsLegalPlayerMove(location))
 		{
@@ -233,25 +268,15 @@ bool TicTacToeBoard::ProcessInput(const std::string input)
 		std::string inputString;
 
 
-		std::cout << "Please enter a new width (min of 3):\n";
+		std::cout << "Please enter 'X,Y' for the new dimensions (min of 3,3 max of 12,12):\n";
 		std::cin >> inputString;
-		while (!IsInputANumber(inputString))
+		while (!IsInputAValidSize(inputString))
 		{
-			std::cout << "Invalid number! Please enter a new width (min of 3):\n";
-			std::cout << "Please enter a new width (min of 3):\n";
+			std::cout << "Invalid size. Please try again:\n";
+			std::cout << "Please enter 'X, Y' for the new dimensions (min of 3,3 max of 12,12):\n";
 			std::cin >> inputString;
 		}
-		newWidth = GetInputNumber(inputString);
-
-		std::cout << "Please enter a new height (min of 3):\n";
-		std::cin >> inputString;
-		while (!IsInputANumber(inputString))
-		{
-			std::cout << "Invalid number! Please enter a new height (min of 3):\n";
-			std::cout << "Please enter a new width (min of 3):\n";
-			std::cin >> inputString;
-		}
-		newHeight = GetInputNumber(inputString);
+		bool result = GetInputMoveLocation(inputString, &newWidth, &newHeight);
 
 		std::cout << "New board size is now " << newWidth << "X" << newHeight << "\n";
 
@@ -567,19 +592,12 @@ void TicTacToeBoard::PrintHelp()
 	std::cout << "You will play against the computer. Your will play cPlayerPiece and the computer will play cComputerPiece\n";
 	std::cout << "You will get to move first :) \n\n";
 
-	std::cout << "Depending on the size of the board, the numeric identifiers for the squares will look like this:\n\n";
-	std::cout << "-------------\n";
-	std::cout << "| 0 | 1 | 2 |\n";
-	std::cout << "-------------\n";
-	std::cout << "| 3 | 4 | 5 |\n";
-	std::cout << "-------------\n";
-	std::cout << "| 6 | 7 | 8 |\n";
-	std::cout << "-------------\n\n";
+
 
 	std::cout << "Here is a list of the available commands:\n";
 	std::cout << "    help: prints this help\n";
 	std::cout << "    restart: restarts the game\n";
-	std::cout << "    (0-N): chooses a square on the board on which to place your piece\n";
+	std::cout << "    (0..BoardWidth-1),(0..BoardHeight-1): chooses a square on the board on which to place your piece\n";
 	std::cout << "    resize: prompts for a new set of board dimensions (min 3x3)\n";
 	std::cout << "    undo: rewinds the game one step (note that if you choose to undo one of your moves, the computers last move will also be undone)\n";
 	std::cout << "    quit: exits the game\n\n\n";

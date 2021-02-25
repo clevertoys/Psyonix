@@ -77,8 +77,9 @@ private:
 	void AllocateBoardMemory();
 	bool IsLegalPlayerMove(int moveLocation) const;
 	void PrintRowOfDashes() const;
-	bool IsInputANumber(const std::string input) const;
-	int GetInputNumber(const std::string input) const;
+	bool IsInputAMoveLocation(const std::string input) const;
+	bool IsInputAValidSize(const std::string input) const;
+	bool GetInputMoveLocation(const std::string input, int* x, int* y) const;
 
 
 
